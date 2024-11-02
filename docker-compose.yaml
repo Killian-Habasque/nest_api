@@ -1,0 +1,13 @@
+services:
+  postgres:
+    container_name: nestBDD
+    image: library/postgres:13.3
+#    volumes:
+#      - ./docker/db/dump:/docker-entrypoint-initdb.d
+#      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: 'nest'
+      POSTGRES_USER: 'root'
+      POSTGRES_PASSWORD: 'root'
+    ports:
+      - "54321:5432"
