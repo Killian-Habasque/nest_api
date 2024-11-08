@@ -1,6 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { Keyword } from 'src/keywords/entities/keyword.entity';
 
 @Entity()
 @Unique(['username'])
@@ -16,6 +23,9 @@ export class User {
   @Exclude()
   @Column({ length: 150, default: null })
   password: string;
+
+  @OneToMany(() => Keyword, (keyword) => keyword.user)
+  keywords: Keyword[];
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
