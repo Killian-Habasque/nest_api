@@ -10,6 +10,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, { loadEnvironment } from '../config/configuration';
 import { WebsitesModule } from './websites/websites.module';
+import { KeywordsModule } from './keywords/keywords.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { WebsitesModule } from './websites/websites.module';
       load: [configuration],
     }),
     WebsitesModule
+    KeywordsModule,
   ],
   controllers: [AppController],
   providers: [
