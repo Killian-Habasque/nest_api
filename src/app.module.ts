@@ -21,7 +21,7 @@ import { KeywordsModule } from './keywords/keywords.module';
       envFilePath: loadEnvironment(process.env.NODE_ENV),
       load: [configuration],
     }),
-    WebsitesModule
+    WebsitesModule,
     KeywordsModule,
   ],
   controllers: [AppController],
