@@ -16,11 +16,11 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     if (
-      await this.userRepository.exists({
+      await this.userRepository.exist({
         where: { username: createUserDto.username },
       })
     ) {
-      throw new NotUniqueException('A user with this username already exist');
+      throw new NotUniqueException('A user with this username already exists');
     }
     const saltOrRounds = 10;
     const password = createUserDto.password;
@@ -35,19 +35,28 @@ export class UsersService {
     return this.userRepository.find();
   }
 
+  async findOneById(id: number): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
+  }
+
   findOne(username: string): Promise<User> {
     return this.userRepository.findOneBy({ username });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     await this.userRepository.update(id, updateUserDto);
-    return this.userRepository.findOneBy({ id });
+    return this.findOneById(id);
   }
 
-  async remove(id: number) {
-    if (!(await this.userRepository.exists({ where: { id: id } }))) {
-      throw new NotFoundException();
+  async remove(id: number): Promise<void> {
+    const userExists = await this.userRepository.exist({ where: { id } });
+    if (!userExists) {
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return this.userRepository.delete(id);
+    await this.userRepository.delete(id);
   }
 }
