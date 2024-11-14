@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Website } from './entities/website.entity';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import { UpdateWebsiteDto } from './dto/update-website.dto';
@@ -19,7 +19,7 @@ export class WebsitesService {
   async create(createWebsiteDto: CreateWebsiteDto, userId: number): Promise<Website> {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const website = this.websiteRepository.create({
@@ -30,23 +30,53 @@ export class WebsitesService {
     return this.websiteRepository.save(website);
   }
 
-  findAll(): Promise<Website[]> {
+  async findAll(): Promise<Website[]> {
     return this.websiteRepository.find({ relations: ['user'] });
   }
 
-  findOne(id: number): Promise<Website> {
-    return this.websiteRepository.findOne({
+  async findOne(id: number, userId: number): Promise<Website> {
+    const website = await this.websiteRepository.findOne({
       where: { id },
       relations: ['user'],
     });
+
+    if (!website) {
+      throw new NotFoundException('Website not found');
+    }
+
+    if (website.user.id !== userId) {
+      throw new ForbiddenException("You don't have permission to view this website.");
+    }
+
+    return website;
   }
 
-  async update(id: number, updateWebsiteDto: UpdateWebsiteDto): Promise<Website> {
+  async update(id: number, updateWebsiteDto: UpdateWebsiteDto, userId: number): Promise<Website> {
+    const website = await this.websiteRepository.findOne({ where: { id }, relations: ['user'] });
+
+    if (!website) {
+      throw new NotFoundException('Website not found');
+    }
+
+    if (website.user.id !== userId) {
+      throw new ForbiddenException("You don't have permission to update this website.");
+    }
+
     await this.websiteRepository.update(id, updateWebsiteDto);
-    return this.websiteRepository.findOneBy({ id });
+    return this.websiteRepository.findOne({ where: { id } });
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number, userId: number): Promise<void> {
+    const website = await this.websiteRepository.findOne({ where: { id }, relations: ['user'] });
+
+    if (!website) {
+      throw new NotFoundException('Website not found');
+    }
+
+    if (website.user.id !== userId) {
+      throw new ForbiddenException("You don't have permission to delete this website.");
+    }
+
     await this.websiteRepository.delete(id);
   }
 }
