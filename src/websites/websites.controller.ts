@@ -33,23 +33,34 @@ export class WebsitesController {
     return this.websitesService.create(createWebsiteDto, userId);
   }
 
-  @Get()
-  findAll(): Promise<Website[]> {
-    return this.websitesService.findAll();
-  }
-
+  @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Website> {
-    return this.websitesService.findOne(+id);
+  async findOne(@Param('id') id: string, @Request() req): Promise<Website> {
+    const userId = req.user.sub;
+    return this.websitesService.findOne(+id, userId);
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWebsiteDto: UpdateWebsiteDto) {
-    return this.websitesService.update(+id, updateWebsiteDto);
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'Website updated successfully.',
+    type: Website,
+  })
+  async update(@Param('id') id: string, @Body() updateWebsiteDto: UpdateWebsiteDto, @Request() req) {
+    const userId = req.user.sub;
+    return this.websitesService.update(+id, updateWebsiteDto, userId);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.websitesService.remove(+id);
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'Website deleted successfully.',
+    type: Website,
+  })
+  async remove(@Param('id') id: string, @Request() req) {
+    const userId = req.user.sub;
+    return this.websitesService.remove(+id, userId);
   }
 }
