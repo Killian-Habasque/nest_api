@@ -9,33 +9,33 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { WebsitesService } from './websites.service';
-import { CreateWebsiteDto } from './dto/create-website.dto';
-import { UpdateWebsiteDto } from './dto/update-website.dto';
-import { Website } from './entities/website.entity';
+import { CategoriesService } from './categories.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Category } from './entities/category.entity';
 import { ApiCreatedResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 
-@Controller('websites')
-@ApiTags('Websites')
-export class WebsitesController {
-  constructor(private readonly websitesService: WebsitesService) {}
+@Controller('categories')
+@ApiTags('Categories')
+export class CategoriesController {
+  constructor(private readonly websitesService: CategoriesService) {}
 
   @UseGuards(AuthGuard)
   @Post()
   @ApiBearerAuth()
   @ApiCreatedResponse({
-    description: 'Website created successfully and linked to the user.',
-    type: Website,
+    description: 'Category created successfully and linked to the user.',
+    type: Category,
   })
-  async create(@Body() createWebsiteDto: CreateWebsiteDto, @Request() req) {
+  async create(@Body() createWebsiteDto: CreateCategoryDto, @Request() req) {
     const userId = req.user.sub;
     return this.websitesService.create(createWebsiteDto, userId);
   }
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req): Promise<Website> {
+  async findOne(@Param('id') id: string, @Request() req): Promise<Category> {
     const userId = req.user.sub;
     return this.websitesService.findOne(+id, userId);
   }
@@ -44,10 +44,14 @@ export class WebsitesController {
   @Patch(':id')
   @ApiBearerAuth()
   @ApiCreatedResponse({
-    description: 'Website updated successfully.',
-    type: Website,
+    description: 'Category updated successfully.',
+    type: Category,
   })
-  async update(@Param('id') id: string, @Body() updateWebsiteDto: UpdateWebsiteDto, @Request() req) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateWebsiteDto: UpdateCategoryDto,
+    @Request() req,
+  ) {
     const userId = req.user.sub;
     return this.websitesService.update(+id, updateWebsiteDto, userId);
   }
@@ -56,8 +60,8 @@ export class WebsitesController {
   @Delete(':id')
   @ApiBearerAuth()
   @ApiCreatedResponse({
-    description: 'Website deleted successfully.',
-    type: Website,
+    description: 'Category deleted successfully.',
+    type: Category,
   })
   async remove(@Param('id') id: string, @Request() req) {
     const userId = req.user.sub;

@@ -3,14 +3,17 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinTable,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/users/entities/user.entity';
+import { Tag } from 'src/tags/entities/tag.entity';
 
 @Entity()
-export class Keyword {
+export class Category {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
@@ -28,10 +31,15 @@ export class Keyword {
   updatedAt: Date;
 
   @ApiProperty({ type: () => User })
-  @ManyToOne(() => User, (user) => user.keywords)
+  @ManyToOne(() => User, (user) => user.categories)
   user: User;
 
-  constructor(partial: Partial<Keyword>) {
+  @ApiProperty({ type: () => Tag, isArray: true })
+  @ManyToMany(() => Tag, (tag) => tag.categories)
+  @JoinTable()
+  tags: Tag[];
+
+  constructor(partial: Partial<Category>) {
     Object.assign(this, partial);
   }
 }
