@@ -10,74 +10,74 @@ import { User } from 'src/users/entities/user.entity';
 export class TagsService {
   constructor(
     @InjectRepository(Tag)
-    private websiteRepository: Repository<Tag>,
+    private tagRepository: Repository<Tag>,
 
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createWebsiteDto: CreateTagDto, userId: number): Promise<Tag> {
+  async create(createTagDto: CreateTagDto, userId: number): Promise<Tag> {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const website = this.websiteRepository.create({
-      ...createWebsiteDto,
+    const tag = this.tagRepository.create({
+      ...createTagDto,
       user,
     });
 
-    return this.websiteRepository.save(website);
+    return this.tagRepository.save(tag);
   }
 
   async findAll(): Promise<Tag[]> {
-    return this.websiteRepository.find({ relations: ['user'] });
+    return this.tagRepository.find({ relations: ['user'] });
   }
 
   async findOne(id: number, userId: number): Promise<Tag> {
-    const website = await this.websiteRepository.findOne({
+    const tag = await this.tagRepository.findOne({
       where: { id },
       relations: ['user'],
     });
 
-    if (!website) {
+    if (!tag) {
       throw new NotFoundException('Tag not found');
     }
 
-    if (website.user.id !== userId) {
-      throw new ForbiddenException("You don't have permission to view this website.");
+    if (tag.user.id !== userId) {
+      throw new ForbiddenException("You don't have permission to view this tag.");
     }
 
-    return website;
+    return tag;
   }
 
-  async update(id: number, updateWebsiteDto: UpdateTagDto, userId: number): Promise<Tag> {
-    const website = await this.websiteRepository.findOne({ where: { id }, relations: ['user'] });
+  async update(id: number, updateTagDto: UpdateTagDto, userId: number): Promise<Tag> {
+    const tag = await this.tagRepository.findOne({ where: { id }, relations: ['user'] });
 
-    if (!website) {
+    if (!tag) {
       throw new NotFoundException('Tag not found');
     }
 
-    if (website.user.id !== userId) {
-      throw new ForbiddenException("You don't have permission to update this website.");
+    if (tag.user.id !== userId) {
+      throw new ForbiddenException("You don't have permission to update this tag.");
     }
 
-    await this.websiteRepository.update(id, updateWebsiteDto);
-    return this.websiteRepository.findOne({ where: { id } });
+    await this.tagRepository.update(id, updateTagDto);
+    return this.tagRepository.findOne({ where: { id } });
   }
 
   async remove(id: number, userId: number): Promise<void> {
-    const website = await this.websiteRepository.findOne({ where: { id }, relations: ['user'] });
+    const tag = await this.tagRepository.findOne({ where: { id }, relations: ['user'] });
 
-    if (!website) {
+    if (!tag) {
       throw new NotFoundException('Tag not found');
     }
 
-    if (website.user.id !== userId) {
-      throw new ForbiddenException("You don't have permission to delete this website.");
+    if (tag.user.id !== userId) {
+      throw new ForbiddenException("You don't have permission to delete this tag.");
     }
 
-    await this.websiteRepository.delete(id);
+    await this.tagRepository.delete(id);
   }
 }
 
