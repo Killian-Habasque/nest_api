@@ -15,11 +15,16 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './entities/category.entity';
 import { ApiCreatedResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
+import { Tag } from 'src/tags/entities/tag.entity';
+import { In, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Controller('categories')
 @ApiTags('Categories')
 export class CategoriesController {
-  constructor(private readonly websitesService: CategoriesService) {}
+  constructor(private readonly CategoriesService: CategoriesService,     
+    @InjectRepository(Tag)
+    private readonly tagRepository: Repository<Tag>,) {}
 
   @UseGuards(AuthGuard)
   @Post()
@@ -28,16 +33,22 @@ export class CategoriesController {
     description: 'Category created successfully and linked to the user.',
     type: Category,
   })
-  async create(@Body() createWebsiteDto: CreateCategoryDto, @Request() req) {
+  async create(@Body() createCategoryDto: CreateCategoryDto, @Request() req) {
     const userId = req.user.sub;
-    return this.websitesService.create(createWebsiteDto, userId);
+    
+    const foundTags = await this.tagRepository.findBy({
+      id: In(createCategoryDto.tags), 
+    });
+  
+    return this.CategoriesService.create(createCategoryDto, userId, foundTags);
   }
+  
 
   @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string, @Request() req): Promise<Category> {
     const userId = req.user.sub;
-    return this.websitesService.findOne(+id, userId);
+    return this.CategoriesService.findOne(+id, userId);
   }
 
   @UseGuards(AuthGuard)
@@ -49,11 +60,12 @@ export class CategoriesController {
   })
   async update(
     @Param('id') id: string,
-    @Body() updateWebsiteDto: UpdateCategoryDto,
+    @Body() updateCategoryDto: UpdateCategoryDto,
     @Request() req,
   ) {
     const userId = req.user.sub;
-    return this.websitesService.update(+id, updateWebsiteDto, userId);
+    const tags: Tag[] = updateCategoryDto.tags;
+    return this.CategoriesService.update(+id, updateCategoryDto, userId, tags);
   }
 
   @UseGuards(AuthGuard)
@@ -65,6 +77,6 @@ export class CategoriesController {
   })
   async remove(@Param('id') id: string, @Request() req) {
     const userId = req.user.sub;
-    return this.websitesService.remove(+id, userId);
+    return this.CategoriesService.remove(+id, userId);
   }
 }

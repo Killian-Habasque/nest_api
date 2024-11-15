@@ -23,7 +23,7 @@ import { plainToInstance } from 'class-transformer';
 @Controller('tags')
 @ApiTags('Tags')
 export class TagsController {
-  constructor(private readonly websitesService: TagsService) { }
+  constructor(private readonly apiService: TagsService) { }
 
   @UseGuards(AuthGuard)
   @Post()
@@ -33,11 +33,11 @@ export class TagsController {
     type: PresenterTagDto,
   })
   async create(
-    @Body() createWebsiteDto: CreateTagDto,
+    @Body() createTagDto: CreateTagDto,
     @Request() req,
   ): Promise<PresenterTagDto> {
     const userId = req.user.sub;
-    const createdTag = await this.websitesService.create(createWebsiteDto, userId);
+    const createdTag = await this.apiService.create(createTagDto, userId);
     return plainToInstance(PresenterTagDto, createdTag, { excludeExtraneousValues: true });
   }
 
@@ -53,7 +53,7 @@ export class TagsController {
     @Request() req,
   ): Promise<PresenterTagDto> {
     const userId = req.user.sub;
-    const tag = await this.websitesService.findOne(+id, userId);
+    const tag = await this.apiService.findOne(+id, userId);
     return plainToInstance(PresenterTagDto, tag, { excludeExtraneousValues: true });
   }
 
@@ -66,11 +66,11 @@ export class TagsController {
   })
   async update(
     @Param('id') id: string,
-    @Body() updateWebsiteDto: UpdateTagDto,
+    @Body() updateTagDto: UpdateTagDto,
     @Request() req,
   ): Promise<PresenterTagDto> {
     const userId = req.user.sub;
-    const updatedTag = await this.websitesService.update(+id, updateWebsiteDto, userId);
+    const updatedTag = await this.apiService.update(+id, updateTagDto, userId);
     return plainToInstance(PresenterTagDto, updatedTag, { excludeExtraneousValues: true });
   }
 
@@ -86,7 +86,7 @@ export class TagsController {
     @Request() req,
   ): Promise<PresenterTagDto> {
     const userId = req.user.sub;
-    const deletedTag = await this.websitesService.remove(+id, userId);
+    const deletedTag = await this.apiService.remove(+id, userId);
     return plainToInstance(PresenterTagDto, deletedTag, { excludeExtraneousValues: true });
   }
 }

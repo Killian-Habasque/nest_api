@@ -1,30 +1,3 @@
-// import { Injectable } from '@nestjs/common';
-// import { CreateCategoryDto } from './dto/create-category.dto';
-// import { UpdateCategoryDto } from './dto/update-category.dto';
-
-// @Injectable()
-// export class CategoriesService {
-//   create(createCategoryDto: CreateCategoryDto) {
-//     return 'This action adds a new category';
-//   }
-
-//   findAll() {
-//     return `This action returns all categories`;
-//   }
-
-//   findOne(id: number) {
-//     return `This action returns a #${id} category`;
-//   }
-
-//   update(id: number, updateCategoryDto: UpdateCategoryDto) {
-//     return `This action updates a #${id} category`;
-//   }
-
-//   remove(id: number) {
-//     return `This action removes a #${id} category`;
-//   }
-// }
-
 import {
   ForbiddenException,
   Injectable,
@@ -36,6 +9,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { Tag } from 'src/tags/entities/tag.entity';
 
 @Injectable()
 export class CategoriesService {
@@ -45,33 +19,41 @@ export class CategoriesService {
 
     @InjectRepository(User)
     private userRepository: Repository<User>,
+
+    @InjectRepository(Tag)
+    private tagRepository: Repository<Tag>, 
   ) {}
 
-  async create(
-    createCategoryDto: CreateCategoryDto,
-    userId: number,
-  ): Promise<Category> {
+
+  async create(createCategoryDto: CreateCategoryDto, userId: number, tags: Tag[]): Promise<Category> {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
+  
+    if (tags.length !== createCategoryDto.tags.length) {
+      throw new NotFoundException('Some tags not found');
+    }
+  
     const category = this.categoryRepository.create({
       ...createCategoryDto,
       user,
+      tags,
     });
-
+  
     return this.categoryRepository.save(category);
   }
+  
 
   async findAll(): Promise<Category[]> {
-    return this.categoryRepository.find({ relations: ['user'] });
+    return this.categoryRepository.find({ relations: ['user', 'tags'] }); 
   }
+
 
   async findOne(id: number, userId: number): Promise<Category> {
     const category = await this.categoryRepository.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['user', 'tags'],
     });
 
     if (!category) {
@@ -91,10 +73,11 @@ export class CategoriesService {
     id: number,
     updateCategoryDto: UpdateCategoryDto,
     userId: number,
+    tags: Tag[],
   ): Promise<Category> {
     const category = await this.categoryRepository.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['user', 'tags'],
     });
 
     if (!category) {
@@ -107,8 +90,19 @@ export class CategoriesService {
       );
     }
 
-    await this.categoryRepository.update(id, updateCategoryDto);
-    return this.categoryRepository.findOne({ where: { id } });
+    const existingTags = await this.tagRepository.findByIds(
+      tags.map((tag) => tag.id),
+    );
+
+    if (existingTags.length !== tags.length) {
+      throw new NotFoundException('One or more tags not found');
+    }
+
+    category.label = updateCategoryDto.label;
+    category.slug = updateCategoryDto.slug;
+    category.tags = existingTags;
+
+    return this.categoryRepository.save(category);
   }
 
   async remove(id: number, userId: number): Promise<void> {
