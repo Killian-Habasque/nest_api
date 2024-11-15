@@ -9,8 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, { loadEnvironment } from '../config/configuration';
-import { WebsitesModule } from './websites/websites.module';
-import { KeywordsModule } from './keywords/keywords.module';
+import { TagsModule } from './tags/tags.module';
 
 @Module({
   imports: [
@@ -21,8 +20,7 @@ import { KeywordsModule } from './keywords/keywords.module';
       envFilePath: loadEnvironment(process.env.NODE_ENV),
       load: [configuration],
     }),
-    WebsitesModule,
-    KeywordsModule,
+    TagsModule,
   ],
   controllers: [AppController],
   providers: [
