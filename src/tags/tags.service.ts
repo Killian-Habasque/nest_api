@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Tag } from './entities/tag.entity';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
@@ -45,21 +49,32 @@ export class TagsService {
     }
 
     if (website.user.id !== userId) {
-      throw new ForbiddenException("You don't have permission to view this website.");
+      throw new ForbiddenException(
+        "You don't have permission to view this website.",
+      );
     }
 
     return website;
   }
 
-  async update(id: number, updateWebsiteDto: UpdateTagDto, userId: number): Promise<Tag> {
-    const website = await this.websiteRepository.findOne({ where: { id }, relations: ['user'] });
+  async update(
+    id: number,
+    updateWebsiteDto: UpdateTagDto,
+    userId: number,
+  ): Promise<Tag> {
+    const website = await this.websiteRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
 
     if (!website) {
       throw new NotFoundException('Tag not found');
     }
 
     if (website.user.id !== userId) {
-      throw new ForbiddenException("You don't have permission to update this website.");
+      throw new ForbiddenException(
+        "You don't have permission to update this website.",
+      );
     }
 
     await this.websiteRepository.update(id, updateWebsiteDto);
@@ -67,17 +82,21 @@ export class TagsService {
   }
 
   async remove(id: number, userId: number): Promise<void> {
-    const website = await this.websiteRepository.findOne({ where: { id }, relations: ['user'] });
+    const website = await this.websiteRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
 
     if (!website) {
       throw new NotFoundException('Tag not found');
     }
 
     if (website.user.id !== userId) {
-      throw new ForbiddenException("You don't have permission to delete this website.");
+      throw new ForbiddenException(
+        "You don't have permission to delete this website.",
+      );
     }
 
     await this.websiteRepository.delete(id);
   }
 }
-
