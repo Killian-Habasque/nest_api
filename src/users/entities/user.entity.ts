@@ -10,6 +10,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Tag } from 'src/tags/entities/tag.entity';
+import { Category } from 'src/categories/entities/category.entity';
 
 @Entity()
 @Unique(['username'])
@@ -34,8 +35,11 @@ export class User {
   @Column({ length: 150, default: null })
   password: string;
 
-  @OneToMany(() => Tag, (website) => website.user)
-  websites: Tag[];
+  @OneToMany(() => Tag, (tag) => tag.user)
+  tags: Tag[];
+
+  @OneToMany(() => Category, (category) => category.user)
+  categories: Category[];
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);

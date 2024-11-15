@@ -10,6 +10,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, { loadEnvironment } from '../config/configuration';
 import { TagsModule } from './tags/tags.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TagsModule } from './tags/tags.module';
       load: [configuration],
     }),
     TagsModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [

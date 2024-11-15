@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
     Column,
     CreateDateColumn,
@@ -5,9 +6,11 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     UpdateDateColumn,
+    ManyToMany,
   } from 'typeorm';
   import { User } from 'src/users/entities/user.entity';
   import { ApiProperty } from '@nestjs/swagger';
+import { Category } from 'src/categories/entities/category.entity';
   
   @Entity()
   export class Tag {
@@ -32,9 +35,13 @@ import {
     slug: string;
   
     @ApiProperty({ type: () => User })
-    @ManyToOne(() => User, (user) => user.websites, { nullable: false })
+    @ManyToOne(() => User, (user) => user.tags, { nullable: false })
     user: User;
   
+    @ApiProperty({ type: () => Category, isArray: true })
+    @ManyToMany(() => Category, (category) => category.tags)
+    categories: Category[];
+
     constructor(partial: Partial<Tag>) {
       Object.assign(this, partial);
     }
