@@ -38,6 +38,7 @@ export class Category {
   @ManyToMany(() => Tag, (tag) => tag.categories)
   @JoinTable()
   tags: Tag[];
+  slug: string;
 
   constructor(partial: Partial<Category>) {
     Object.assign(this, partial);
