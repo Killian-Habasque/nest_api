@@ -1,22 +1,22 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { Website } from './entities/website.entity';
-import { CreateWebsiteDto } from './dto/create-website.dto';
-import { UpdateWebsiteDto } from './dto/update-website.dto';
+import { Tag } from './entities/tag.entity';
+import { CreateTagDto } from './dto/create-tag.dto';
+import { UpdateTagDto } from './dto/update-tag.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
-export class WebsitesService {
+export class TagsService {
   constructor(
-    @InjectRepository(Website)
-    private websiteRepository: Repository<Website>,
+    @InjectRepository(Tag)
+    private websiteRepository: Repository<Tag>,
 
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createWebsiteDto: CreateWebsiteDto, userId: number): Promise<Website> {
+  async create(createWebsiteDto: CreateTagDto, userId: number): Promise<Tag> {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -30,18 +30,18 @@ export class WebsitesService {
     return this.websiteRepository.save(website);
   }
 
-  async findAll(): Promise<Website[]> {
+  async findAll(): Promise<Tag[]> {
     return this.websiteRepository.find({ relations: ['user'] });
   }
 
-  async findOne(id: number, userId: number): Promise<Website> {
+  async findOne(id: number, userId: number): Promise<Tag> {
     const website = await this.websiteRepository.findOne({
       where: { id },
       relations: ['user'],
     });
 
     if (!website) {
-      throw new NotFoundException('Website not found');
+      throw new NotFoundException('Tag not found');
     }
 
     if (website.user.id !== userId) {
@@ -51,11 +51,11 @@ export class WebsitesService {
     return website;
   }
 
-  async update(id: number, updateWebsiteDto: UpdateWebsiteDto, userId: number): Promise<Website> {
+  async update(id: number, updateWebsiteDto: UpdateTagDto, userId: number): Promise<Tag> {
     const website = await this.websiteRepository.findOne({ where: { id }, relations: ['user'] });
 
     if (!website) {
-      throw new NotFoundException('Website not found');
+      throw new NotFoundException('Tag not found');
     }
 
     if (website.user.id !== userId) {
@@ -70,7 +70,7 @@ export class WebsitesService {
     const website = await this.websiteRepository.findOne({ where: { id }, relations: ['user'] });
 
     if (!website) {
-      throw new NotFoundException('Website not found');
+      throw new NotFoundException('Tag not found');
     }
 
     if (website.user.id !== userId) {
