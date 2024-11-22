@@ -26,6 +26,22 @@ export class TagsController {
   constructor(private readonly websitesService: TagsService) { }
 
   @UseGuards(AuthGuard)
+  @Get()
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'Tags retrieved successfully.',
+    type: PresenterTagDto,
+  })
+  
+  async findAll(
+    @Request() req,
+  ): Promise<PresenterTagDto[]> {
+    const userId = req.user.sub;
+    const tags = await this.websitesService.findAll(userId);
+    return plainToInstance(PresenterTagDto, tags, { excludeExtraneousValues: true });
+  }
+
+  @UseGuards(AuthGuard)
   @Post()
   @ApiBearerAuth()
   @ApiCreatedResponse({

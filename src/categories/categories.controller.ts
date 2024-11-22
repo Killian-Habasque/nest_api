@@ -22,10 +22,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 @Controller('categories')
 @ApiTags('Categories')
 export class CategoriesController {
-  constructor(private readonly CategoriesService: CategoriesService,     
+  constructor(private readonly CategoriesService: CategoriesService,
     @InjectRepository(Tag)
-    private readonly tagRepository: Repository<Tag>,) {}
+    private readonly tagRepository: Repository<Tag>,) { }
 
+  @UseGuards(AuthGuard)
+  @Get()
+  async findAll(
+    @Request() req,
+  ): Promise<Category[]> {
+    const userId = req.user.sub;
+    return this.CategoriesService.findAll(userId);
+  }
+  
   @UseGuards(AuthGuard)
   @Post()
   @ApiBearerAuth()
@@ -35,14 +44,14 @@ export class CategoriesController {
   })
   async create(@Body() createCategoryDto: CreateCategoryDto, @Request() req) {
     const userId = req.user.sub;
-    
+
     const foundTags = await this.tagRepository.findBy({
-      id: In(createCategoryDto.tags), 
+      id: In(createCategoryDto.tags),
     });
-  
+
     return this.CategoriesService.create(createCategoryDto, userId, foundTags);
   }
-  
+
 
   @UseGuards(AuthGuard)
   @Get(':id')
