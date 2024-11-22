@@ -34,10 +34,13 @@ export class TagsService {
     return this.tagRepository.save(tag);
   }
 
-  async findAll(): Promise<Tag[]> {
-    return this.tagRepository.find({ relations: ['user'] });
+  async findAll(userId: number): Promise<Tag[]> {
+    return this.tagRepository.find({
+      where: { user: { id: userId } }, 
+      relations: ['user'],
+    });
   }
-
+  
   async findOne(id: number, userId: number): Promise<Tag> {
     const tag = await this.tagRepository.findOne({
       where: { id },

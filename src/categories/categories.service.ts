@@ -43,12 +43,13 @@ export class CategoriesService {
   
     return this.categoryRepository.save(category);
   }
-  
 
-  async findAll(): Promise<Category[]> {
-    return this.categoryRepository.find({ relations: ['user', 'tags'] }); 
+  async findAll(userId: number): Promise<Category[]> {
+    return this.categoryRepository.find({
+      where: { user: { id: userId } }, 
+      relations: ['user', 'tags'],
+    });
   }
-
 
   async findOne(id: number, userId: number): Promise<Category> {
     const category = await this.categoryRepository.findOne({
