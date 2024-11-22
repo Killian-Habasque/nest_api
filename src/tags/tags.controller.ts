@@ -37,7 +37,7 @@ export class TagsController {
     @Request() req,
   ): Promise<PresenterTagDto[]> {
     const userId = req.user.sub;
-    const tags = await this.websitesService.findAll(userId);
+    const tags = await this.apiService.findAll(userId);
     return plainToInstance(PresenterTagDto, tags, { excludeExtraneousValues: true });
   }
 
