@@ -25,10 +25,12 @@ export class YoutubeService {
 
       const data = await response.json();
       return data.items.map((item) => ({
+        publishedAt: item.snippet.publishedAt,
         title: item.snippet.title,
         description: item.snippet.description,
         url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
         thumbnail: item.snippet.thumbnails.default.url,
+        channelTitle: item.snippet.channelTitle,
       }));
     } catch (error) {
       throw new Error(`Failed to fetch videos from YouTube: ${error.message}`);
