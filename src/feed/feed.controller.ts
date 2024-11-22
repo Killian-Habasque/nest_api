@@ -1,14 +1,20 @@
-import { Controller, Get, Query, Request } from '@nestjs/common';
+import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { TagsService } from 'src/tags/tags.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '../auth/auth.guard';
+
 @Controller('feed')
+@ApiTags('Feed')
 export class FeedController {
   constructor(
     private readonly feedService: FeedService,
     private readonly tagsService: TagsService,
   ) {}
 
-  @Get('')
+  @UseGuards(AuthGuard)
+  @Get()
+  @ApiBearerAuth()
   async searchByTags(
     @Request() req,
     @Query('maxResults') maxResults: number = 10,
