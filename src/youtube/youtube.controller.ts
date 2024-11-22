@@ -6,17 +6,11 @@ export class YoutubeController {
   constructor(private readonly youtubeService: YoutubeService) {}
 
   @Get('search')
-  async searchVideos(
-    @Query('query') query: string,
-    @Query('maxResults') maxResults: string,
+  async searchByTags(
+    @Query('tags') tags: string,
+    @Query('maxResults') maxResults: number = 5,
   ) {
-    const results = await this.youtubeService.searchVideos(
-      query,
-      Number(maxResults) || 5,
-    );
-    return {
-      success: true,
-      data: results,
-    };
+    const tagsArray = tags.split(',');
+    return this.youtubeService.searchByTags(tagsArray, maxResults);
   }
 }

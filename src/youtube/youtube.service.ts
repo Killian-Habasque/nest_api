@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -11,16 +11,16 @@ export class YoutubeService {
     this.youtubeApiUrl = 'https://www.googleapis.com/youtube/v3';
   }
 
-  async searchVideos(query: string, maxResults: number = 5): Promise<any> {
-    const url = `${this.youtubeApiUrl}/search?part=snippet&q=${query}&maxResults=${maxResults}&key=${this.apiKey}`;
+  async searchByTags(tags: string[], maxResults: number = 5): Promise<any> {
+    const query = tags.join(' ');
+    const url = `${this.youtubeApiUrl}/search?part=snippet&q=${encodeURIComponent(
+      query,
+    )}&maxResults=${maxResults}&key=${this.apiKey}`;
 
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new HttpException(
-          `Failed to fetch data from YouTube API: ${response.statusText}`,
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new Error(`YouTube API Error: ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -31,10 +31,7 @@ export class YoutubeService {
         thumbnail: item.snippet.thumbnails.default.url,
       }));
     } catch (error) {
-      throw new HttpException(
-        'An error occurred while fetching videos from YouTube',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new Error(`Failed to fetch videos from YouTube: ${error.message}`);
     }
   }
 }
