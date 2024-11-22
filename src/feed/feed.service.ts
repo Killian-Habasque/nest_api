@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class YoutubeService {
+export class FeedService {
   private readonly apiKey: string;
   private readonly youtubeApiUrl: string;
 
@@ -25,6 +25,7 @@ export class YoutubeService {
 
       const data = await response.json();
       return data.items.map((item) => ({
+        id: item.id,
         publishedAt: item.snippet.publishedAt,
         title: item.snippet.title,
         description: item.snippet.description,
