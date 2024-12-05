@@ -1,6 +1,14 @@
-import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { TagsService } from 'src/tags/tags.service';
+import { CategoriesService } from 'src/categories/categories.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 
@@ -10,7 +18,8 @@ export class FeedController {
   constructor(
     private readonly feedService: FeedService,
     private readonly tagsService: TagsService,
-  ) {}
+    private readonly categoriesService: CategoriesService,
+  ) { }
 
   @UseGuards(AuthGuard)
   @Get()
@@ -22,10 +31,31 @@ export class FeedController {
     const userId = req.user.sub;
 
     const tags = await this.tagsService.findAll(userId);
-
     const tagsArray = tags.map(tag => tag.label);
 
     return this.feedService.searchByTags(tagsArray, maxResults);
   }
-}
 
+  @UseGuards(AuthGuard)
+  @Get(':categoryId')
+  @ApiBearerAuth()
+  async searchByCategory(
+    @Request() req,
+    @Param('categoryId') categoryId: number,
+    @Query('maxResults') maxResults: number = 10,
+  ) {
+    const userId = req.user.sub;
+
+    const category = await this.categoriesService.findOne(
+      categoryId,
+      userId,
+    );
+    if (!category) {
+      throw new Error('Category not found or does not belong to the user');
+    }
+
+    const tagsArray = category.tags.map(tag => tag.label);
+
+    return this.feedService.searchByTags(tagsArray, maxResults);
+  }
+}
