@@ -3,10 +3,11 @@ import { FeedService } from './feed.service';
 import { FeedController } from './feed.controller';
 import { ConfigModule } from '@nestjs/config';
 import { TagsModule } from 'src/tags/tags.module';
+import { CategoriesModule } from 'src/categories/categories.module';
 
 @Module({
-  imports: [ConfigModule, TagsModule],
+  imports: [ConfigModule, TagsModule, CategoriesModule],
   controllers: [FeedController],
   providers: [FeedService],
 })
-export class FeedModule {}
+export class FeedModule { }
