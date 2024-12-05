@@ -8,11 +8,12 @@ import {
   Delete,
   UseGuards,
   Request,
+  SerializeOptions,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Category } from './entities/category.entity';
+import { Category, GROUP_ALL_CATEGORIES, GROUP_CATEGORY } from './entities/category.entity';
 import { ApiCreatedResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { Tag } from 'src/tags/entities/tag.entity';
@@ -28,6 +29,9 @@ export class CategoriesController {
 
   @UseGuards(AuthGuard)
   @Get()
+  @SerializeOptions({
+    groups: [GROUP_ALL_CATEGORIES],
+  })
   async findAll(
     @Request() req,
   ): Promise<Category[]> {
@@ -55,6 +59,9 @@ export class CategoriesController {
 
   @UseGuards(AuthGuard)
   @Get(':id')
+  @SerializeOptions({
+    groups: [GROUP_CATEGORY],
+  })
   async findOne(@Param('id') id: string, @Request() req): Promise<Category> {
     const userId = req.user.sub;
     return this.CategoriesService.findOne(+id, userId);
@@ -63,6 +70,9 @@ export class CategoriesController {
   @UseGuards(AuthGuard)
   @Patch(':id')
   @ApiBearerAuth()
+  @SerializeOptions({
+    groups: [GROUP_CATEGORY],
+  })
   @ApiCreatedResponse({
     description: 'Category updated successfully.',
     type: Category,
@@ -80,6 +90,9 @@ export class CategoriesController {
   @UseGuards(AuthGuard)
   @Delete(':id')
   @ApiBearerAuth()
+  @SerializeOptions({
+    groups: [GROUP_CATEGORY],
+  })
   @ApiCreatedResponse({
     description: 'Category deleted successfully.',
     type: Category,
