@@ -7,7 +7,7 @@ import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Tag } from 'src/tags/entities/tag.entity';
 
@@ -21,8 +21,8 @@ export class CategoriesService {
     private userRepository: Repository<User>,
 
     @InjectRepository(Tag)
-    private tagRepository: Repository<Tag>, 
-  ) {}
+    private tagRepository: Repository<Tag>,
+  ) { }
 
 
   async create(createCategoryDto: CreateCategoryDto, userId: number, tags: Tag[]): Promise<Category> {
@@ -30,23 +30,31 @@ export class CategoriesService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-  
-    if (tags.length !== createCategoryDto.tags.length) {
-      throw new NotFoundException('Some tags not found');
+
+    const userTags = await this.tagRepository.find({
+      where: {
+        id: In(createCategoryDto.tags),
+        user: { id: userId },
+      },
+    });
+
+    if (userTags.length !== createCategoryDto.tags.length) {
+      throw new ForbiddenException('One or more tags not found or do not belong to the user');
     }
-  
+
     const category = this.categoryRepository.create({
       ...createCategoryDto,
       user,
-      tags,
+      tags: userTags,
     });
-  
+
     return this.categoryRepository.save(category);
   }
 
+
   async findAll(userId: number): Promise<Category[]> {
     return this.categoryRepository.find({
-      where: { user: { id: userId } }, 
+      where: { user: { id: userId } },
       relations: ['user', 'tags'],
     });
   }
@@ -91,20 +99,24 @@ export class CategoriesService {
       );
     }
 
-    const existingTags = await this.tagRepository.findByIds(
-      tags.map((tag) => tag.id),
-    );
+    const userTags = await this.tagRepository.find({
+      where: {
+        id: In(tags.map((tag) => tag.id)),
+        user: { id: userId },
+      },
+    });
 
-    if (existingTags.length !== tags.length) {
-      throw new NotFoundException('One or more tags not found');
+    if (userTags.length !== tags.length) {
+      throw new NotFoundException('One or more tags not found or do not belong to the user');
     }
 
     category.label = updateCategoryDto.label;
     category.slug = updateCategoryDto.slug;
-    category.tags = existingTags;
+    category.tags = userTags;
 
     return this.categoryRepository.save(category);
   }
+
 
   async remove(id: number, userId: number): Promise<void> {
     const category = await this.categoryRepository.findOne({
