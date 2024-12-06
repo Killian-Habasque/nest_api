@@ -7,7 +7,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriesModule } from 'src/categories/categories.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tag]), UsersModule, CategoriesModule],
+  imports: [
+    TypeOrmModule.forFeature([Tag]),
+    UsersModule,
+    CategoriesModule
+  ],
   controllers: [TagsController],
   providers: [TagsService],
   exports: [TagsService, TypeOrmModule],

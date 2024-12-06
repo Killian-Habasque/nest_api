@@ -26,14 +26,19 @@ export class FeedController {
   @ApiBearerAuth()
   async searchByTags(
     @Request() req,
-    @Query('maxResults') maxResults: number = 10,
+    @Query('maxResults') maxResults: string = '10',
   ) {
     const userId = req.user.sub;
+
+    const parsedMaxResults = parseInt(maxResults, 10);
+    if (isNaN(parsedMaxResults)) {
+      throw new Error('Invalid maxResults parameter. It must be a number.');
+    }
 
     const tags = await this.tagsService.findAll(userId);
     const tagsArray = tags.map(tag => tag.label);
 
-    return this.feedService.searchByTags(tagsArray, maxResults);
+    return this.feedService.searchByTags(tagsArray, parsedMaxResults);
   }
 
   @UseGuards(AuthGuard)
@@ -42,9 +47,14 @@ export class FeedController {
   async searchByCategory(
     @Request() req,
     @Param('categoryId') categoryId: number,
-    @Query('maxResults') maxResults: number = 10,
+    @Query('maxResults') maxResults: string = '10',
   ) {
     const userId = req.user.sub;
+
+    const parsedMaxResults = parseInt(maxResults, 10);
+    if (isNaN(parsedMaxResults)) {
+      throw new Error('Invalid maxResults parameter. It must be a number.');
+    }
 
     const category = await this.categoriesService.findOne(
       categoryId,
@@ -56,6 +66,6 @@ export class FeedController {
 
     const tagsArray = category.tags.map(tag => tag.label);
 
-    return this.feedService.searchByTags(tagsArray, maxResults);
+    return this.feedService.searchByTags(tagsArray, parsedMaxResults);
   }
 }
