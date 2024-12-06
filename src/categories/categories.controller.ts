@@ -46,6 +46,9 @@ export class CategoriesController {
     description: 'Category created successfully and linked to the user.',
     type: Category,
   })
+  @SerializeOptions({
+    groups: [GROUP_CATEGORY],
+  })
   async create(@Body() createCategoryDto: CreateCategoryDto, @Request() req) {
     const userId = req.user.sub;
 
