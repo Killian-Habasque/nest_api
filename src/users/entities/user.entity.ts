@@ -38,6 +38,11 @@ export class User {
   @Expose({ groups: [GROUP_USER, GROUP_ALL_USERS] })
   username: string;
 
+  @ApiProperty()
+  @Column({ type: 'text', nullable: true })
+  @Expose({ groups: [GROUP_USER, GROUP_ALL_USERS] })
+  githubname: string;
+
   @Exclude()
   @Column({ length: 150, default: null })
   password: string;
