@@ -11,10 +11,11 @@ import {
   HttpCode,
   UseGuards,
   Request,
+  SerializeOptions,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { GROUP_ALL_USERS, GROUP_USER, User } from './entities/user.entity';
 import { ApiCreatedResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 
@@ -31,6 +32,9 @@ export class UsersController {
     description: 'Current user information retrieved successfully.',
     type: User,
   })
+  @SerializeOptions({
+    groups: [GROUP_USER],
+  })
   async getMe(@Request() req): Promise<User> {
     const userId = req.user.sub; 
     return this.usersService.findOneById(userId);
@@ -42,6 +46,9 @@ export class UsersController {
     type: User,
     isArray: true,
   })
+  @SerializeOptions({
+    groups: [GROUP_ALL_USERS],
+  })
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
@@ -52,6 +59,9 @@ export class UsersController {
     description: 'The record has been successfully created.',
     type: User,
   })
+  @SerializeOptions({
+    groups: [GROUP_USER],
+  })
   findOne(@Param('username') username: string) {
     return this.usersService.findOne(username);
   }
@@ -60,6 +70,9 @@ export class UsersController {
   @ApiCreatedResponse({
     description: 'User updated successfully.',
     type: User,
+  })
+  @SerializeOptions({
+    groups: [GROUP_USER],
   })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
     return this.usersService.update(+id, updateUserDto);

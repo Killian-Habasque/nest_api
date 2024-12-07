@@ -48,10 +48,15 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    if (updateUserDto.password) {
+      const saltOrRounds = 10;
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, saltOrRounds);
+    }
+  
     await this.userRepository.update(id, updateUserDto);
     return this.findOneById(id);
   }
-
+  
   async remove(id: number): Promise<void> {
     const userExists = await this.userRepository.exist({ where: { id } });
     if (!userExists) {
