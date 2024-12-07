@@ -20,12 +20,30 @@ import { AuthGuard } from '../auth/auth.guard';
 // import { PresenterTagDto } from './dto/presenter-tag.dto';
 // import { plainToInstance } from 'class-transformer';
 import { GROUP_ALL_TAGS, GROUP_TAG, Tag } from './entities/tag.entity';
+import { UsersService } from '../users/users.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('tags')
 @ApiTags('Tags')
 export class TagsController {
-  constructor(private readonly apiService: TagsService) { }
+  constructor(private readonly apiService: TagsService,
+    private readonly usersService: UsersService, 
+  ) { }
+
+  @UseGuards(AuthGuard)
+  @Get('github-topics')
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'GitHub topics retrieved successfully.',
+    type: [String],
+  })
+  async getGithubTopics(
+    @Request() req,
+  ): Promise<string[]> {
+    const userId = req.user.sub;
+    const user = await this.usersService.findOneById(userId);
+    return this.apiService.getGithubTopics(user.githubname);
+  }
 
   @UseGuards(AuthGuard)
   @Get()
@@ -114,4 +132,6 @@ export class TagsController {
     const userId = req.user.sub;
     return this.apiService.remove(+id, userId);
   }
+
+
 }

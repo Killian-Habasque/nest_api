@@ -86,4 +86,28 @@ export class TagsService {
 
     await this.tagRepository.delete(id);
   }
+
+  async getGithubTopics(githubName?: string): Promise<string[]> {
+    if (!githubName) {
+      throw new NotFoundException('GitHub username is not provided.');
+    }
+    const url = `https://api.github.com/users/${githubName}/repos`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`GitHub API Error: ${response.statusText}`);
+      }
+
+      const repos = await response.json();
+      const topics = repos
+        .filter((repo) => Array.isArray(repo.topics))
+        .flatMap((repo) => repo.topics);
+
+      return Array.from(new Set(topics));
+    } catch (error) {
+      throw new Error(`Failed to fetch topics from GitHub: ${error.message}`);
+    }
+  }
+
 }
