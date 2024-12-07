@@ -11,7 +11,7 @@
             "src": "/(.*)",
             "dest": "src/main.ts",
             "methods": [
-                "GETS",
+                "GET",
                 "POST",
                 "PUT",
                 "DELETE"
