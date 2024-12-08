@@ -15,7 +15,10 @@ import { FeedModule } from './feed/feed.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(dataSourceOptions),
+    TypeOrmModule.forRoot({
+      ...dataSourceOptions,
+      autoLoadEntities: true,
+    }),
     UsersModule,
     AuthModule,
     ConfigModule.forRoot({
@@ -36,4 +39,4 @@ import { FeedModule } from './feed/feed.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }
