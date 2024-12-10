@@ -37,7 +37,7 @@ const prodConfig: DataSourceOptions = {
   migrationsTableName: 'migration_table',
 };
 
-const dataSourceOptions: DataSourceOptions = isDev ? devConfig : prodConfig;
+const dataSourceOptions: DataSourceOptions = isProd ? prodConfig : devConfig;
 
 const dataSource = new DataSource(dataSourceOptions);
 export default dataSource;
