@@ -17,27 +17,42 @@ export const GROUP_ALL_TAGS = 'group_all_tags';
 
 @Entity()
 export class Tag {
-  @ApiProperty()
+  @ApiProperty({
+    description: "Identifiant unique du tag",
+    example: 1,
+  })
   @PrimaryGeneratedColumn()
   @Expose({ groups: [GROUP_TAG, GROUP_ALL_TAGS, GROUP_CATEGORY] })
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: "Date de création du tag",
+    example: '2023-10-01T10:00:00Z',
+  })
   @CreateDateColumn({ name: 'created_at' })
   @Expose({ groups: [GROUP_TAG] })
   createdAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: "Date de dernière mise à jour du tag",
+    example: '2023-10-05T14:00:00Z',
+  })  
   @UpdateDateColumn({ name: 'updated_at' })
   @Expose({ groups: [GROUP_TAG] })
   updatedAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Label de tag',
+    example: 'Nestjs'
+  })
   @Column({ length: 150 })
   @Expose({ groups: [GROUP_TAG, GROUP_ALL_TAGS, GROUP_CATEGORY] })
   label: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Slug de tag',
+    example: 'nestjs'
+  })
   @Column({ length: 150 })
   @Expose({ groups: [GROUP_TAG, GROUP_ALL_TAGS, GROUP_CATEGORY] })
   slug: string;

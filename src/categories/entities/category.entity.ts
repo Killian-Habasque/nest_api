@@ -18,25 +18,44 @@ export const GROUP_ALL_CATEGORIES = 'group_all_categories';
 
 @Entity()
 export class Category {
-  @ApiProperty()
+  @ApiProperty({
+    description: "Identifiant unique de la catégorie",
+    example: 1,
+  })
   @PrimaryGeneratedColumn()
   @Expose({ groups: [GROUP_CATEGORY, GROUP_ALL_CATEGORIES] })
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Label de la catégorie',
+    example: 'Code'
+  })
   @Column({ length: 500 })
   @Expose({ groups: [GROUP_CATEGORY, GROUP_ALL_CATEGORIES] })
   label: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: "Date de création de la catégorie",
+    example: '2023-10-01T10:00:00Z',
+  })
   @CreateDateColumn({ name: 'created_at' })
   @Expose({ groups: [GROUP_CATEGORY] })
   createdAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: "Date de dernière mise à jour de la catégorie",
+    example: '2023-10-05T14:00:00Z',
+  })  
   @UpdateDateColumn({ name: 'updated_at' })
   @Expose({ groups: [GROUP_CATEGORY] })
   updatedAt: Date;
+
+  @ApiProperty({
+    description: 'Slug de la catégorie',
+    example: 'code'
+  })
+  @Expose({ groups: [GROUP_CATEGORY] })
+  slug: string;
 
   @ApiProperty({ type: () => User })
   @ManyToOne(() => User, (user) => user.categories)
@@ -48,10 +67,6 @@ export class Category {
   @JoinTable()
   @Expose({ groups: [GROUP_CATEGORY] })
   tags: Tag[];
-
-  @ApiProperty()
-  @Expose({ groups: [GROUP_CATEGORY] })
-  slug: string;
 
   constructor(partial: Partial<Category>) {
     Object.assign(this, partial);

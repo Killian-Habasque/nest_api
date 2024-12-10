@@ -18,32 +18,52 @@ export const GROUP_ALL_USERS = 'group_all_users';
 @Entity()
 @Unique(['username'])
 export class User {
-  @ApiProperty()
+  @ApiProperty({
+    description: "Date de création de l'utilisateur",
+    example: '2023-10-01T10:00:00Z',
+  })
   @CreateDateColumn({ name: 'created_at' })
   @Expose({ groups: [GROUP_USER] })
   createdAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: "Date de dernière mise à jour de l'utilisateur",
+    example: '2023-10-05T14:00:00Z',
+  })
   @UpdateDateColumn({ name: 'updated_at' })
   @Expose({ groups: [GROUP_USER] })
   updatedAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: "Identifiant unique de l'utilisateur",
+    example: 1,
+  })
   @PrimaryGeneratedColumn()
   @Expose({ groups: [GROUP_USER, GROUP_ALL_USERS] })
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: "Nom d'utilisateur unique",
+    example: 'john_doe'
+  })
   @Column({ length: 500 })
   @Expose({ groups: [GROUP_USER, GROUP_ALL_USERS] })
   username: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: "Nom d'utilisateur GitHub",
+    example: 'github_user',
+    nullable: true,
+  })
   @Column({ type: 'text', nullable: true })
   @Expose({ groups: [GROUP_USER, GROUP_ALL_USERS] })
   githubname: string;
 
   @Exclude()
+  @ApiProperty({
+    description: "Mot de passe de l'utilisateur",
+    example: 'fjsdf7dskdsqkjd'
+  })
   @Column({ length: 150, default: null })
   password: string;
 
