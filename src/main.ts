@@ -18,7 +18,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3000',
       'http://127.0.0.1:3000',
-      'https://frontend-domaine.com', // Frontend déployé
+      'https://custom-feed-frontend.vercel.app/',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
