@@ -16,9 +16,9 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
+      'https://custom-feed-frontend.vercel.app',
       'http://localhost:8000',
       'http://127.0.0.1:8000',
-      'https://custom-feed-frontend.vercel.app/',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
