@@ -27,6 +27,7 @@ export class FeedController {
   async searchByTags(
     @Request() req,
     @Query('maxResults') maxResults: string = '10',
+    @Query('pageToken') pageToken?: string,
   ) {
     const userId = req.user.sub;
 
@@ -38,7 +39,7 @@ export class FeedController {
     const tags = await this.tagsService.findAll(userId);
     const tagsArray = tags.map(tag => tag.label);
 
-    return this.feedService.searchByTags(tagsArray, parsedMaxResults);
+    return this.feedService.searchByTags(tagsArray, parsedMaxResults, pageToken);
   }
 
   @UseGuards(AuthGuard)
