@@ -18,7 +18,7 @@
             "headers": [
                 {
                     "key": "Access-Control-Allow-Origin",
-                    "value": "http://localhost:8000 https://votre-frontend-prod.com"
+                    "value": "http://localhost:8000 https://custom-feed-frontend.vercel.app/"
                 },
                 {
                     "key": "Access-Control-Allow-Methods",
