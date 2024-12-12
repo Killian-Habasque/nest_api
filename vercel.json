@@ -13,14 +13,19 @@
             "methods": [
                 "GET",
                 "POST",
-                "PUT",
+                "PUT", 
                 "DELETE",
                 "OPTIONS"
-            ],
+            ]
+        }
+    ],
+    "headers": [
+        {
+            "source": "/(.*)",
             "headers": [
                 {
                     "key": "Access-Control-Allow-Origin",
-                    "value": "http://localhost:8000 https://custom-feed-frontend.vercel.app"
+                    "value": "http://localhost:8000 https://votre-frontend-prod.com"
                 },
                 {
                     "key": "Access-Control-Allow-Methods",
