@@ -14,6 +14,17 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'https://frontend-domaine.com', // Frontend déployé
+    ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+  
+
   const config = new DocumentBuilder()
     .setTitle('My api')
     .setDescription('The cats API description')
