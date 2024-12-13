@@ -1,11 +1,19 @@
+# Custom Youtube feed API
 
-![Logo](https://camo.githubusercontent.com/4b0000b8e7a6449a924fe0212093b9f3936ef80cc8fdfbb770baad58f58b8c2c/68747470733a2f2f6e6573746a732e636f6d2f696d672f6c6f676f2d736d616c6c2e737667)
+This API offers a personalized experience for its users by enabling the creation of a youtube feed based on tags and categories added by a logged-in user. Users can also associate their GitHub ID to display the GitHub topics used in their projects and repositories.
+Link to production API : https://nest-api-sand.vercel.app/
 
 
-# Next API
-
-This API generate you a custom Youtube feed from your custom tags.
-
+## Features
+1. Route visualization : CRUD for users, tags and categories. 
+2. Topic retrieval from github repositories and custom youtube feed retrieval.
+3. Integration of external APIs:
+- YouTube API
+- GitHub API
+4. E2E testing:
+- Tests for user and tag CRUD routes.
+- Tests for github-topics and feed-youtube routes.
+5. Deployment: Deployed on Vercel with Github CI/CD.
 
 ## Run Locally
 
@@ -33,33 +41,40 @@ Migrate the database
   npm run migration:run  
 ```
 
-Start the server
+Create .env file to the project root and paste this :
+
+```bash
+  YOUTUBE_API_KEY=YOUR_KEY
+```
+Create youtube api key v3 :
+
+To create your youtube api v3 key you need to have google account developer on https://console.cloud.google.com/, and follow documentation https://console.cloud.google.com/apis/library/youtube.googleapis.com.
+
+1. Create a project or use an existing one.
+2. Activate the YouTube Data API.
+3. Generate an access token using OAuth 2.0 credentials.
+4. Put your new api key in the .env file.
+
+Start the server with the dev environnement.
 
 ```bash
   npm run start:dev
 ```
 
+## How to test it ?
 
-## Features
-
-- full api
-- auth
-- protected crud on tags and categories
-
-
-## Roadmap
-
-- Youtube feed generation
-
-- Github integrations
+- You can go on postman and login to your account. After go here and test all routes locally or in production directly : https://blue-crater-195788.postman.co/workspace/nest-api~f1074b64-4aad-40b6-b686-c3638df112b8/request/31656301-17655352-0db6-44e5-a0ef-acf8fbb91955?action=share&creator=31656301&ctx=documentation
 
 
 ## Tech Stack
 
-
-**Server:** Node, Nest
+**App:** Node, Nest
 
 **Database:** Docker, PostgreSql
+
+**Test:** Jest
+
+**Cloud:** Vercel
 
 
 ## Authors
