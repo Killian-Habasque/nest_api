@@ -3,14 +3,14 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log(process.env.DATABASE_URL);
-console.log(process.env.NODE_ENV);
+// console.log(process.env.DATABASE_URL);
+// console.log(process.env.NODE_ENV);
 
 const isDev = process.env.NODE_ENV?.trim() === 'dev';
 const isProd = process.env.NODE_ENV?.trim() === 'prod';
 
-console.log(isDev);
-console.log(isProd);
+// console.log(isDev);
+// console.log(isProd);
 
 const devConfig: DataSourceOptions = {
   type: 'postgres',

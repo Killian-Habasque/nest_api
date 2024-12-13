@@ -6,12 +6,11 @@ import {
   Delete,
   UseInterceptors,
   ClassSerializerInterceptor,
-  HttpStatus,
-  HttpCode,
   UseGuards,
   Request,
   SerializeOptions,
   Patch,
+  HttpException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -89,9 +88,16 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string, @Request() req): Promise<void> {
+  @ApiCreatedResponse({
+    description: 'User deleted successfully',
+  })
+  async remove(@Param('id') id: string, @Request() req): Promise<{ message: string }> {
     const currentUserId = req.user.sub;
-    await this.usersService.remove(+id, currentUserId);
+    try {
+      await this.usersService.remove(+id, currentUserId);
+      return { message: 'User deleted successfully' }; 
+    } catch (error) {
+      throw new HttpException('Failed to delete user', error); 
+    }
   }
 }
