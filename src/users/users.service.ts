@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { NotUniqueException } from '../exception/NotUniqueException';
@@ -47,17 +47,31 @@ export class UsersService {
     return this.userRepository.findOneBy({ username });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(id: number, updateUserDto: UpdateUserDto, currentUserId: number): Promise<User> {
+    if (id !== currentUserId) {
+      throw new ForbiddenException("You don't have permission to update this user.");
+    }
     if (updateUserDto.password) {
       const saltOrRounds = 10;
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, saltOrRounds);
     }
-  
+    
+    if (updateUserDto.username) {
+      const existingUser = await this.userRepository.findOne({
+        where: { username: updateUserDto.username, id: Not(id) },
+      });
+      if (existingUser) {
+        throw new ConflictException('Username already taken by another user');
+      }
+    }
     await this.userRepository.update(id, updateUserDto);
     return this.findOneById(id);
   }
   
-  async remove(id: number): Promise<void> {
+  async remove(id: number, currentUserId: number): Promise<void> {
+    if (id !== currentUserId) {
+      throw new ForbiddenException("You don't have permission to delete this user.");
+    }
     const userExists = await this.userRepository.exist({ where: { id } });
     if (!userExists) {
       throw new NotFoundException(`User with ID ${id} not found`);

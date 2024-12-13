@@ -6,16 +6,17 @@ import {
   Delete,
   UseInterceptors,
   ClassSerializerInterceptor,
-  Put,
   HttpStatus,
   HttpCode,
   UseGuards,
   Request,
   SerializeOptions,
+  Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { GROUP_ALL_USERS, GROUP_USER, User } from './entities/user.entity';
+import { GROUP_USER, User } from './entities/user.entity';
+// import { GROUP_ALL_USERS } from './entities/user.entity';
 import { ApiCreatedResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 
@@ -40,33 +41,35 @@ export class UsersController {
     return this.usersService.findOneById(userId);
   }
 
-  @Get()
-  @ApiCreatedResponse({
-    description: 'All users retrieved successfully.',
-    type: User,
-    isArray: true,
-  })
-  @SerializeOptions({
-    groups: [GROUP_ALL_USERS],
-  })
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
-  }
+  // ADMIN REQUEST
+  // @Get()
+  // @ApiCreatedResponse({
+  //   description: 'All users retrieved successfully.',
+  //   type: User,
+  //   isArray: true,
+  // })
+  // @SerializeOptions({
+  //   groups: [GROUP_ALL_USERS],
+  // })
+  // findAll(): Promise<User[]> {
+  //   return this.usersService.findAll();
+  // }
 
-  @Get(':id')
-  @ApiTags('Users')
-  @ApiCreatedResponse({
-    description: 'The record has been successfully created.',
-    type: User,
-  })
-  @SerializeOptions({
-    groups: [GROUP_USER],
-  })
-  findOne(@Param('username') username: string) {
-    return this.usersService.findOne(username);
-  }
+  // ADMIN REQUEST
+  // @Get(':id') 
+  // @ApiCreatedResponse({
+  //   description: 'User retrieved successfully.',
+  //   type: User,
+  // })
+  // @SerializeOptions({
+  //   groups: [GROUP_USER],
+  // })
+  // findOne(@Param('id') id: string) {
+  //   return this.usersService.findOneById(+id); 
+  // }
 
-  @Put(':id')
+  @UseGuards(AuthGuard)
+  @Patch(':id')
   @ApiCreatedResponse({
     description: 'User updated successfully.',
     type: User,
@@ -74,13 +77,21 @@ export class UsersController {
   @SerializeOptions({
     groups: [GROUP_USER],
   })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
-    return this.usersService.update(+id, updateUserDto);
+  async update(
+    @Param('id') id: string, 
+    @Body() updateUserDto: UpdateUserDto, 
+    @Request() req
+  ): Promise<User> {
+    const currentUserId = req.user.sub;
+    return this.usersService.update(+id, updateUserDto, currentUserId);
   }
 
+
+  @UseGuards(AuthGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string): Promise<void> {
-    await this.usersService.remove(+id);
+  async remove(@Param('id') id: string, @Request() req): Promise<void> {
+    const currentUserId = req.user.sub;
+    await this.usersService.remove(+id, currentUserId);
   }
 }
