@@ -31,7 +31,7 @@ export class FeedService {
           title: item.snippet.title,
           description: item.snippet.description,
           url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
-          thumbnail: item.snippet.thumbnails.default.url,
+          thumbnail: item.snippet.thumbnails.medium.url,
           channelTitle: item.snippet.channelTitle,
         })),
         nextPageToken: data.nextPageToken,
