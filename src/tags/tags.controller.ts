@@ -21,6 +21,7 @@ import { AuthGuard } from '../auth/auth.guard';
 // import { plainToInstance } from 'class-transformer';
 import { GROUP_ALL_TAGS, GROUP_TAG, Tag } from './entities/tag.entity';
 import { UsersService } from '../users/users.service';
+import { GROUP_ALL_CATEGORIES, GROUP_CATEGORY } from 'src/categories/entities/category.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('tags')
@@ -53,7 +54,7 @@ export class TagsController {
     type: Tag,
   })
   @SerializeOptions({
-    groups: [GROUP_ALL_TAGS],
+    groups: [GROUP_ALL_TAGS, GROUP_ALL_CATEGORIES],
   })
   async findAll(
     @Request() req,
@@ -89,7 +90,7 @@ export class TagsController {
     type: Tag,
   })
   @SerializeOptions({
-    groups: [GROUP_TAG],
+    groups: [GROUP_TAG, GROUP_CATEGORY],
   })
   async findOne(
     @Param('id') id: string,

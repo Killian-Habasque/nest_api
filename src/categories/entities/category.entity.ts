@@ -10,8 +10,8 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/users/entities/user.entity';
-import { Tag } from 'src/tags/entities/tag.entity';
 import { Exclude, Expose } from 'class-transformer';
+import { Tag, GROUP_TAG, GROUP_ALL_TAGS } from 'src/tags/entities/tag.entity';
 
 export const GROUP_CATEGORY = 'group_category_details';
 export const GROUP_ALL_CATEGORIES = 'group_all_categories';
@@ -23,7 +23,7 @@ export class Category {
     example: 1,
   })
   @PrimaryGeneratedColumn()
-  @Expose({ groups: [GROUP_CATEGORY, GROUP_ALL_CATEGORIES] })
+  @Expose({ groups: [GROUP_CATEGORY, GROUP_ALL_CATEGORIES, GROUP_TAG, GROUP_ALL_TAGS] })
   id: number;
 
   @ApiProperty({
@@ -31,7 +31,7 @@ export class Category {
     example: 'Code'
   })
   @Column({ length: 500 })
-  @Expose({ groups: [GROUP_CATEGORY, GROUP_ALL_CATEGORIES] })
+  @Expose({ groups: [GROUP_CATEGORY, GROUP_ALL_CATEGORIES, GROUP_TAG, GROUP_ALL_TAGS] })
   label: string;
 
   @ApiProperty({
@@ -39,7 +39,7 @@ export class Category {
     example: '2023-10-01T10:00:00Z',
   })
   @CreateDateColumn({ name: 'created_at' })
-  @Expose({ groups: [GROUP_CATEGORY] })
+  @Expose({ groups: [GROUP_CATEGORY, GROUP_ALL_CATEGORIES] })
   createdAt: Date;
 
   @ApiProperty({
@@ -54,7 +54,7 @@ export class Category {
     description: 'Slug de la catégorie',
     example: 'code'
   })
-  @Expose({ groups: [GROUP_CATEGORY] })
+  @Expose({ groups: [GROUP_CATEGORY, GROUP_ALL_CATEGORIES, GROUP_TAG, GROUP_ALL_TAGS] })
   slug: string;
 
   @ApiProperty({ type: () => User })
@@ -65,7 +65,7 @@ export class Category {
   @ApiProperty({ type: () => Tag, isArray: true })
   @ManyToMany(() => Tag, (tag) => tag.categories)
   @JoinTable()
-  @Expose({ groups: [GROUP_CATEGORY, GROUP_ALL_CATEGORIES] })
+  @Expose({ groups: [GROUP_CATEGORY, GROUP_ALL_CATEGORIES, GROUP_TAG, GROUP_ALL_TAGS] })
   tags: Tag[];
 
   constructor(partial: Partial<Category>) {

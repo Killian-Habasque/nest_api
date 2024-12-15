@@ -6,6 +6,7 @@ import {
   ManyToOne,
   UpdateDateColumn,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
@@ -62,9 +63,9 @@ export class Tag {
   @ManyToOne(() => User, (user) => user.tags, { nullable: false })
   user: User;
 
-  @Exclude()
   @ApiProperty({ type: () => Category, isArray: true })
   @ManyToMany(() => Category, (category) => category.tags)
+  @Expose({ groups: [GROUP_TAG, GROUP_ALL_TAGS] })
   categories: Category[];
 
   constructor(partial: Partial<Tag>) {
