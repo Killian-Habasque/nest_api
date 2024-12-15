@@ -13,17 +13,38 @@ export class FeedService {
 
   async searchByTags(tags: string[], maxResults: number = 5, pageToken?: string): Promise<any> {
     const query = tags.join(' ');
-    const url = `${this.youtubeApiUrl}/search?part=snippet&q=${encodeURIComponent(
+    const searchUrl = `${this.youtubeApiUrl}/search?part=snippet&q=${encodeURIComponent(
       query,
     )}&maxResults=${maxResults}&key=${this.apiKey}${pageToken ? `&pageToken=${pageToken}` : ''}`;
 
     try {
-      const response = await fetch(url);
+      const response = await fetch(searchUrl);
       if (!response.ok) {
         throw new Error(`YouTube API Error: ${response.statusText}`);
       }
 
       const data = await response.json();
+
+      const channelIds = [...new Set(data.items.map((item) => item.snippet.channelId))];
+
+      const channelsUrl = `${this.youtubeApiUrl}/channels?part=snippet&id=${channelIds.join(
+        ',',
+      )}&key=${this.apiKey}`;
+      const channelResponse = await fetch(channelsUrl);
+      if (!channelResponse.ok) {
+        throw new Error(`YouTube API Error: ${channelResponse.statusText}`);
+      }
+
+      const channelData = await channelResponse.json();
+
+      const channelDetails = channelData.items.reduce((acc, channel) => {
+        acc[channel.id] = {
+          avatar: channel.snippet.thumbnails.medium.url,
+          url: `https://www.youtube.com/channel/${channel.id}`,
+        };
+        return acc;
+      }, {});
+
       return {
         items: data.items.map((item) => ({
           id: item.id,
@@ -32,7 +53,11 @@ export class FeedService {
           description: item.snippet.description,
           url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
           thumbnail: item.snippet.thumbnails.medium.url,
-          channelTitle: item.snippet.channelTitle,
+          channel: {
+            title: item.snippet.channelTitle,
+            avatar: channelDetails[item.snippet.channelId]?.avatar,
+            url: channelDetails[item.snippet.channelId]?.url,
+          },
         })),
         nextPageToken: data.nextPageToken,
         prevPageToken: data.prevPageToken,
@@ -41,5 +66,4 @@ export class FeedService {
       throw new Error(`Failed to fetch videos from YouTube: ${error.message}`);
     }
   }
-
 }
