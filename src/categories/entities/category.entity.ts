@@ -65,7 +65,7 @@ export class Category {
   @ApiProperty({ type: () => Tag, isArray: true })
   @ManyToMany(() => Tag, (tag) => tag.categories)
   @JoinTable()
-  @Expose({ groups: [GROUP_CATEGORY] })
+  @Expose({ groups: [GROUP_CATEGORY, GROUP_ALL_CATEGORIES] })
   tags: Tag[];
 
   constructor(partial: Partial<Category>) {
